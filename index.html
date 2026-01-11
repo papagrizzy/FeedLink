@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FeedLink - Connecting Surplus Food</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #eff6ff 100%);
+            min-height: 100vh;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Login Page Styles */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 100%;
+            max-width: 28rem;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #16a34a;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: #6b7280;
+        }
+
+        .user-type-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .user-type-btn {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .user-type-btn.donor {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .user-type-btn.donor.active {
+            background: #16a34a;
+            color: white;
+        }
+
+        .user-type-btn.ngo {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .user-type-btn.ngo.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .file-upload {
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            cursor: pointer;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .submit-btn.donor {
+            background: #16a34a;
+        }
+
+        .submit-btn.donor:hover {
+            background: #15803d;
+        }
+
+        .submit-btn.ngo {
+            background: #2563eb;
+        }
+
+        .submit-btn.ngo:hover {
+            background: #1d4ed8;
+        }
+
+        .toggle-text {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .toggle-link {
+            color: #2563eb;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .toggle-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Dashboard Styles */
+        .dashboard-header {
+            padding: 1rem;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-header.donor {
+            background: #16a34a;
+        }
+
+        .dashboard-header.ngo {
+            background: #2563eb;
+        }
+
+        .header-content {
+            max-width: 72rem;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .header-title p {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .dashboard-content {
+            max-width: 72rem;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 768px) {
+            .grid-2 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .grid-3 {
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 768px) {
+            .grid-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .grid-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #15803d;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .btn-blue {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-blue:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .btn-large {
+            padding: 1rem;
+            font-size: 1rem;
+        }
+
+        .donation-list {
+            max-height: 24rem;
+            overflow-y: auto;
+        }
+
+        .donation-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: box-shadow 0.3s;
+        }
+
+        .donation-item:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .donation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.5rem;
+        }
+
+        .donation-title {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+        }
+
+        .status-available {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-accepted {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .donation-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+
+        .slider-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-label {
+            display: block;
+            color: #374151;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .slider {
+            width: 100%;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            max-width: 28rem;
+            width: 100%;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #16a34a;
+            margin-bottom: 1rem;
+        }
+
+        .modal-header h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .contact-info {
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .contact-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .flex-gap {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .flex-1 {
+            flex: 1;
+        }
+
+        .space-y {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>FeedLink</h1>
+                <p>Connecting surplus food with those in need</p>
+            </div>
+
+            <div class="user-type-buttons">
+                <button class="user-type-btn donor active" onclick="setUserType('donor')">Donor</button>
+                <button class="user-type-btn ngo" onclick="setUserType('ngo')">NGO</button>
+            </div>
+
+            <div class="space-y">
+                <div id="nameField" class="form-group hidden">
+                    <input type="text" id="name" class="form-input" placeholder="Name" required>
+                </div>
+                
+                <div class="form-group">
+                    <input type="email" id="email" class="form-input" placeholder="Email" required>
+                </div>
+                
+                <div class="form-group">
+                    <input type="password" id="password" class="form-input" placeholder="Password" required>
+                </div>
+
+                <div id="addressField" class="form-group hidden">
+                    <input type="text" id="address" class="form-input" placeholder="Address" required>
+                </div>
+                
+                <div id="phoneField" class="form-group hidden">
+                    <input type="tel" id="phone" class="form-input" placeholder="Phone Number" required>
+                </div>
+
+                <div id="documentsField" class="form-group hidden">
+                    <label class="file-upload">
+                        <i data-lucide="upload" style="width: 20px; height: 20px;"></i>
+                        <span>Upload Verification Documents</span>
+                        <input type="file" id="documents" style="display: none;" required>
+                    </label>
+                </div>
+
+                <button id="submitBtn" class="submit-btn donor" onclick="handleSubmit()">Login</button>
+            </div>
+
+            <p class="toggle-text">
+                <span id="toggleText">Don't have an account?</span>
+                <a class="toggle-link" onclick="toggleRegister()">Register</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Donor Dashboard -->
+    <div id="donorDashboard" class="hidden">
+        <header class="dashboard-header donor">
+            <div class="header-content">
+                <div class="header-title">
+                    <h1>FeedLink</h1>
+                    <p id="donorWelcome">Welcome, User</p>
+                </div>
+                <i data-lucide="user" style="width: 32px; height: 32px;"></i>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <div class="grid grid-2">
+                <!-- New Donation Section -->
+                <div class="card">
+                    <h2 class="card-title">
+                        <i data-lucide="package" style="width: 24px; height: 24px; color: #16a34a;"></i>
+                        Create New Donation
+                    </h2>
+                    
+                    <div id="newDonationBtn">
+                        <button class="btn btn-primary btn-full btn-large" onclick="showDonationForm()">+ New Donation</button>
+                    </div>
+
+                    <div id="donationForm" class="hidden space-y">
+                        <input type="text" id="foodType" class="form-input" placeholder="Food Type (e.g., Rice & Curry)" required>
+                        <input type="text" id="quantity" class="form-input" placeholder="Quantity (e.g., 10 kg)" required>
+                        <div>
+                            <label style="display: block; font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem;">Expiry Date</label>
+                            <input type="date" id="expiry" class="form-input" required>
+                        </div>
+                        <label class="file-upload">
+                            <i data-lucide="upload" style="width: 20px; height: 20px;"></i>
+                            <span>Upload Photo</span>
+                            <input type="file" id="photo" accept="image/*" style="display: none;" required>
+                        </label>
+                        <div class="flex-gap">
+                            <button class="btn btn-primary flex-1" onclick="submitDonation()">Submit</button>
+                            <button class="btn btn-secondary flex-1" onclick="hideDonationForm()">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Donations Section -->
+                <div class="card">
+                    <h2 class="card-title">
+                        <i data-lucide="clock" style="width: 24px; height: 24px; color: #16a34a;"></i>
+                        My Donations
+                    </h2>
+                    <div id="donationsList" class="donation-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NGO Dashboard -->
+    <div id="ngoDashboard" class="hidden">
+        <header class="dashboard-header ngo">
+            <div class="header-content">
+                <div class="header-title">
+                    <h1>FeedLink</h1>
+                    <p id="ngoWelcome">Welcome, User</p>
+                </div>
+                <i data-lucide="user" style="width: 32px; height: 32px;"></i>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <div class="card slider-container">
+                <label class="slider-label">Distance Range: <span id="distanceValue">5</span> km</label>
+                <input type="range" id="distanceSlider" class="slider" min="1" max="50" value="5" oninput="updateDistance(this.value)">
+            </div>
+
+            <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">Available Donations</h2>
+            
+            <div id="availableDonationsList" class="grid grid-3"></div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="donorModal" class="modal-overlay hidden" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <i data-lucide="check-circle" style="width: 24px; height: 24px;"></i>
+                <h3>Donation Accepted!</h3>
+            </div>
+            
+            <p style="color: #6b7280; margin-bottom: 1rem;">Contact the donor to arrange pickup:</p>
+            
+            <div class="contact-info" id="donorContactInfo"></div>
+            
+            <button class="btn btn-blue btn-full" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let currentUserType = 'donor';
+        let isRegister = false;
+        let currentUser = null;
+        let donorDonations = [];
+        let availableDonations = [];
+        let currentDistance = 5;
+
+        // Mock API
+        const mockAPI = {
+            login: async (email, password, userType) => {
+                await new Promise(r => setTimeout(r, 500));
+                return {
+                    success: true,
+                    user: { id: '123', email, userType, name: 'John Doe', address: '123 Main St, City' }
+                };
+            },
+            
+            register: async (data, userType) => {
+                await new Promise(r => setTimeout(r, 500));
+                return { 
+                    success: true, 
+                    message: userType === 'ngo' ? 'Registration submitted for approval' : 'Registration successful' 
+                };
+            },
+            
+            createDonation: async (donation) => {
+                await new Promise(r => setTimeout(r, 500));
+                return { success: true, id: Date.now().toString() };
+            },
+            
+            getDonorDonations: async () => {
+                await new Promise(r => setTimeout(r, 500));
+                return [
+                    { id: '1', foodType: 'Rice & Curry', quantity: '10 kg', expiry: '2026-01-15', status: 'Available', date: '2026-01-10' },
+                    { id: '2', foodType: 'Sandwiches', quantity: '20 pieces', expiry: '2026-01-12', status: 'Accepted', date: '2026-01-09' }
+                ];
+            },
+            
+            getAvailableDonations: async (distance) => {
+                await new Promise(r => setTimeout(r, 500));
+                return [
+                    { id: '1', foodType: 'Rice & Curry', quantity: '10 kg', expiry: '2026-01-15', distance: 2.5, donor: { name: 'John Doe', phone: '+1234567890', email: 'john@example.com', address: '123 Main St' } },
+                    { id: '2', foodType: 'Fresh Vegetables', quantity: '5 kg', expiry: '2026-01-13', distance: 4.2, donor: { name: 'Jane Smith', phone: '+0987654321', email: 'jane@example.com', address: '456 Oak Ave' } }
+                ];
+            }
+        };
+
+        // Login functions
+        function setUserType(type) {
+            currentUserType = type;
+            document.querySelectorAll('.user-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.user-type-btn.${type}`).classList.add('active');
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.className = `submit-btn ${type}`;
+            
+            if (isRegister) {
+                updateRegisterFields();
+            }
+        }
+
+        function toggleRegister() {
+            isRegister = !isRegister;
+            const nameField = document.getElementById('nameField');
+            const addressField = document.getElementById('addressField');
+            const phoneField = document.getElementById('phoneField');
+            const documentsField = document.getElementById('documentsField');
+            const submitBtn = document.getElementById('submitBtn');
+            const toggleText = document.getElementById('toggleText');
+            
+            if (isRegister) {
+                nameField.classList.remove('hidden');
+                addressField.classList.remove('hidden');
+                updateRegisterFields();
+                submitBtn.textContent = 'Register';
+                toggleText.textContent = 'Already have an account?';
+            } else {
+                nameField.classList.add('hidden');
+                addressField.classList.add('hidden');
+                phoneField.classList.add('hidden');
+                documentsField.classList.add('hidden');
+                submitBtn.textContent = 'Login';
+                toggleText.textContent = "Don't have an account?";
+            }
+        }
+
+        function updateRegisterFields() {
+            const phoneField = document.getElementById('phoneField');
+            const documentsField = document.getElementById('documentsField');
+            
+            if (currentUserType === 'donor') {
+                phoneField.classList.remove('hidden');
+                documentsField.classList.add('hidden');
+            } else {
+                phoneField.classList.add('hidden');
+                documentsField.classList.remove('hidden');
+            }
+        }
+
+        async function handleSubmit() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const name = document.getElementById('name').value;
+            
+            if (isRegister) {
+                const result = await mockAPI.register({ email, password, name }, currentUserType);
+                alert(result.message);
+                if (currentUserType === 'donor' && result.success) {
+                    currentUser = { email, name, userType: currentUserType };
+                    showDashboard();
+                }
+                isRegister = false;
+                toggleRegister();
+            } else {
+                const result = await mockAPI.login(email, password, currentUserType);
+                if (result.success) {
+                    currentUser = result.user;
+                    showDashboard();
+                }
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('loginPage').classList.add('hidden');
+            
+            if (currentUser.userType === 'donor') {
+                document.getElementById('donorWelcome').textContent = `Welcome, ${currentUser.name}`;
+                document.getElementById('donorDashboard').classList.remove('hidden');
+                loadDonorDonations();
+            } else {
+                document.getElementById('ngoWelcome').textContent = `Welcome, ${currentUser.name}`;
+                document.getElementById('ngoDashboard').classList.remove('hidden');
+                loadAvailableDonations();
+            }
+            
+            lucide.createIcons();
+        }
+
+        // Donor Dashboard functions
+        async function loadDonorDonations() {
+            donorDonations = await mockAPI.getDonorDonations();
+            renderDonorDonations();
+        }
+
+        function renderDonorDonations() {
+            const list = document.getElementById('donationsList');
+            list.innerHTML = donorDonations.map(d => `
+                <div class="donation-item">
+                    <div class="donation-header">
+                        <h3 class="donation-title">${d.foodType}</h3>
+                        <span class="status-badge ${d.status === 'Available' ? 'status-available' : 'status-accepted'}">
+                            ${d.status}
+                        </span>
+                    </div>
+                    <p class="donation-details">Quantity: ${d.quantity}</p>
+                    <p class="donation-details" style="display: flex; align-items: center; gap: 0.25rem;">
+                        <i data-lucide="calendar" style="width: 14px; height: 14px;"></i>
+                        Expires: ${d.expiry}
+                    </p>
+                    <p style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.5rem;">Posted: ${d.date}</p>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function showDonationForm() {
+            document.getElementById('newDonationBtn').classList.add('hidden');
+            document.getElementById('donationForm').classList.remove('hidden');
+        }
+
+        function hideDonationForm() {
+            document.getElementById('newDonationBtn').classList.remove('hidden');
+            document.getElementById('donationForm').classList.add('hidden');
+            document.getElementById('foodType').value = '';
+            document.getElementById('quantity').value = '';
+            document.getElementById('expiry').value = '';
+        }
+
+        async function submitDonation() {
+            const foodType = document.getElementById('foodType').value;
+            const quantity = document.getElementById('quantity').value;
+            const expiry = document.getElementById('expiry').value;
+            
+            if (!foodType || !quantity || !expiry) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            await mockAPI.createDonation({ foodType, quantity, expiry });
+            hideDonationForm();
+            loadDonorDonations();
+            alert('Donation created successfully!');
+        }
+
+        // NGO Dashboard functions
+        async function loadAvailableDonations() {
+            const data = await mockAPI.getAvailableDonations(currentDistance);
+            availableDonations = data.filter(d => d.distance <= currentDistance);
+            renderAvailableDonations();
+        }
+
+        function renderAvailableDonations() {
+            const list = document.getElementById('availableDonationsList');
+            list.innerHTML = availableDonations.map(d => `
+                <div class="card" style="transition: box-shadow 0.3s; cursor: pointer;">
+                    <h3 style="font-weight: bold; font-size: 1.125rem; margin-bottom: 0.5rem;">${d.foodType}</h3>
+                    <div style="margin-bottom: 1rem;">
+                        <p class="donation-details" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <i data-lucide="package" style="width: 16px; height: 16px;"></i>
+                            ${d.quantity}
+                        </p>
+                        <p class="donation-details" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <i data-lucide="calendar" style="width: 16px; height: 16px;"></i>
+                            Expires: ${d.expiry}
+                        </p>
+                        <p class="donation-details" style="display: flex; align-items: center; gap: 0.5rem;">
+                            <i data-lucide="map-pin" style="width: 16px; height: 16px;"></i>
+                            ${d.distance.toFixed(1)} km away
+                        </p>
+                    </div>
+                    <button class="btn btn-blue btn-full" onclick='acceptDonation(${JSON.stringify(d)})'>Accept Donation</button>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function updateDistance(value) {
+            currentDistance = parseInt(value);
+            document.getElementById('distanceValue').textContent = value;
+            loadAvailableDonations();
+        }
+
+        function acceptDonation(donation) {
+            const modal = document.getElementById('donorModal');
+            const contactInfo = document.getElementById('donorContactInfo');
+            
+            contactInfo.innerHTML = `
+                <div class="contact-item">
+                    <i data-lucide="user" style="width: 18px; height: 18px; color: #6b7280;"></i>
+                    <span style="font-weight: 500;">${donation.donor.name}</span>
+                </div>
+                <div class="contact-item">
+                    <i data-lucide="phone" style="width: 18px; height: 18px; color: #6b7280;"></i>
+                    <span>${donation.donor.phone}</span>
+                </div>
+                <div class="contact-item">
+                    <i data-lucide="mail" style="width: 18px; height: 18px; color: #6b7280;"></i>
+                    <span>${donation.donor.email}</span>
+                </div>
+                <div class="contact-item">
+                    <i data-lucide="map-pin" style="width: 18px; height: 18px; color: #6b7280;"></i>
+                    <span style="font-size: 0.875rem;">${donation.donor.address}</span>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeModal(event) {
+            if (!event || event.target.id === 'donorModal') {
+                document.getElementById('donorModal').classList.add('hidden');
+            }
+        }
+
+        // Initialize icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
